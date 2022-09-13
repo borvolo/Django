@@ -1,17 +1,22 @@
-from django.db.models import Count
+from copy import deepcopy
 
 from .models import *
+
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
         {'title': "Обратная связь", 'url_name': 'contact'},
-]
+        ]
+
 
 class DataMixin:
     paginate_by = 3
+
     def get_user_context(self, **kwargs):
         context = kwargs
         cats = Category.objects.all()
-        user_menu = menu.copy()
+
+        # copy не копирует вложенные объекты, они всё ещё могут быть случайно изменены
+        user_menu = deepcopy(menu)
         if not self.request.user.is_authenticated:
             user_menu.pop(1)
         context['menu'] = menu
